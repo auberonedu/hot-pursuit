@@ -14,7 +14,7 @@ static constexpr int MIN_X = -bn::display::width() / 2;
 static constexpr int MAX_X = bn::display::width() / 2;
 
 // The maximum number of enemys
-static constexpr int MAX_ENEMIES = 3;
+static constexpr int MAX_ENEMIES = 6;
 
 // Start enemy speed
 static constexpr double ENEMY_SPEED = 1;
