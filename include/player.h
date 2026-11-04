@@ -1,11 +1,13 @@
 #pragma once
 
-#include "bn_sprite_ptr.h"
+#include <bn_fixed.h>
+#include <bn_rect.h>
+#include <bn_size.h>
+#include <bn_sprite_ptr.h>
 #include "bn_sprite_items_dot.h"
-#include "bn_fixed.h"
-#include "bn_size.h"
-#include "bn_rect.h"
-#include "bn_keypad.h"
+
+// Helper function declaration (assuming this is defined somewhere or in a utility header)
+bn::rect create_bounding_box(const bn::sprite_ptr& sprite, bn::size size);
 
 class Player {
 public:
