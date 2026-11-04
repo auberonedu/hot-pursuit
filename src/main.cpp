@@ -241,6 +241,7 @@ int main() {
                 player.sprite.set_x(44);
                 player.sprite.set_y(22);
                 
+                //Resets enemy size when colliding with the player
                 if(enemies.size() > 1) {
                     enemies.pop_back();
                 }
