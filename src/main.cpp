@@ -232,7 +232,7 @@ int main() {
     bn::vector<Enemy, 5> enemies;
 
     // Manually add a few enemies
-    enemies.push_back(Enemy(0, 0));
+    enemies.push_back(Enemy(-40, 30, 0.75, ENEMY_SIZE));
     
     while(true) {
         player.update();
@@ -246,7 +246,7 @@ int main() {
                 int random_x = rand_spawn.get_int(-150, 150);
                 int random_y = rand_spawn.get_int(-150, 150);
 
-                enemies.push_back(Enemy(random_x, random_y));
+                enemies.push_back(Enemy(random_x, random_y, 0.75, ENEMY_SIZE));
             }   
         }
 
@@ -259,6 +259,7 @@ int main() {
                 player.sprite.set_x(44);
                 player.sprite.set_y(22);
                 
+                //Resets enemy size when colliding with the player
                 if(enemies.size() > 1) {
                     enemies.pop_back();
                 }
