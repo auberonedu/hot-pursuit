@@ -101,63 +101,6 @@ class ScoreDisplay {
         bn::sprite_text_generator text_generator; // Text generator for scores
 };
 
-class Player {
-    public:
-        bn::sprite_ptr sprite = bn::sprite_items::dot.create_sprite();
-        bn::fixed speed; // The speed of the player
-        bn::size size; // The width and height of the sprite
-        bn::rect bounding_box; // The rectangle around the sprite for checking collision
-        
-        Player(bn::fixed x, bn::fixed y, bn::fixed player_speed, bn::size player_size) : 
-        sprite(bn::sprite_items::dot.create_sprite(x, y)),
-            speed(player_speed),
-            size(player_size),
-            bounding_box(create_bounding_box(sprite, player_size))
-        {}
-        /**
-         * Update the position and bounding box of the player based on d-pad movement.
-         */
-        void update() {
-            //Player position variables
-            bn::fixed x = sprite.x();
-            bn::fixed y = sprite.y();
-
-            //Player screen border logic (I just used the same logic from that one bunny game)
-            if (x > MAX_X) {
-                x = MAX_X;
-            }
-            else if (x < MIN_X) {
-                x = MIN_X;
-            }
-            if (y > MAX_Y) {
-                y = MAX_Y;
-            }
-            else if (y < MIN_Y) {
-                y = MIN_Y;
-            }
-
-            sprite.set_x(x);
-            sprite.set_y(y);
-
-            //Player movement
-            if(bn::keypad::right_held()) {
-                sprite.set_x(sprite.x() + speed);
-            }
-            if(bn::keypad::left_held()) {
-                sprite.set_x(sprite.x() - speed);
-            }
-            // TODO: Add logic for up and down
-            if(bn::keypad::up_held()) {
-                sprite.set_y(sprite.y() - speed);
-            }
-            if(bn::keypad::down_held()) {
-                sprite.set_y(sprite.y() + speed);
-            }
-
-            bounding_box = create_bounding_box(sprite, size);
-        }
-};
-
 class Enemy {
     public :
     bn::sprite_ptr mob = bn::sprite_items::square.create_sprite();
