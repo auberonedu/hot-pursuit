@@ -258,6 +258,10 @@ int main() {
                 scoreDisplay.resetScore();
                 player.sprite.set_x(44);
                 player.sprite.set_y(22);
+                
+                if(enemies.size() > 1) {
+                    enemies.pop_back();
+                }
 
                 enemy_position(enemies[i], rand);
             }
