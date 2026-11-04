@@ -269,6 +269,7 @@ int main() {
 
         // Update the scores and disaply them
         scoreDisplay.update();
+
         
 
         bn::core::update();
