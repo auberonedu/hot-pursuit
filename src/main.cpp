@@ -16,6 +16,9 @@
 #include "player.h"
 #include "enemy.h"
 
+//includes for music
+#include "bn_sound_items_oink.h"
+
 // Width and height of the the player bounding box
 static constexpr bn::size PLAYER_SIZE = {8, 8};
 static constexpr bn::size ENEMY_SIZE = {8, 8};
@@ -89,8 +92,6 @@ class ScoreDisplay {
 int main() {
     bn::core::init();
 
-    bn::music_items::bg_music.play(0.8f); 
-
     bn::random rand;
     //random spawn for new enemys
     bn::random rand_spawn;
@@ -125,7 +126,6 @@ int main() {
                 int random_y = rand_spawn.get_int(-150, 150);
 
                 enemies.push_back(Enemy(random_x, random_y, 0.75, ENEMY_SIZE));
-                
             }   
         }
 
@@ -137,6 +137,8 @@ int main() {
                 scoreDisplay.resetScore();
                 player.sprite.set_x(44);
                 player.sprite.set_y(22);
+
+                bn::sound_items::oink.play();
 
                 //Resets the 10 second timer
                 frames = 0;
@@ -152,8 +154,6 @@ int main() {
 
         // Update the scores and disaply them
         scoreDisplay.update();
-
-        
 
         bn::core::update();
     }
