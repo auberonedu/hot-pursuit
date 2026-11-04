@@ -1,15 +1,26 @@
-#pragma once
-
 #include "player.h"
 
-// Helper function declaration (assuming this is defined somewhere or in a utility header)
-bn::rect create_bounding_box(const bn::sprite_ptr& sprite, bn::size size);
+#include <bn_display.h>
+#include <bn_keypad.h>
+#include "bn_sprite_items_dot.h"
 
-// Screen border constants (adjust these if yours are defined elsewhere)
-constexpr bn::fixed MAX_X = 112;
-constexpr bn::fixed MIN_X = -112;
-constexpr bn::fixed MAX_Y = 72;
-constexpr bn::fixed MIN_Y = -72;
+// Screen edges, used to keep the player on screen
+static constexpr int MIN_Y = -bn::display::height() / 2;
+static constexpr int MAX_Y = bn::display::height() / 2;
+static constexpr int MIN_X = -bn::display::width() / 2;
+static constexpr int MAX_X = bn::display::width() / 2;
+
+/**
+ * Creates a rectangle centered at a sprite's location with a given size.
+ * sprite the sprite to center the box around
+ * box_size the dimensions of the bounding box
+ */
+bn::rect create_bounding_box(const bn::sprite_ptr& sprite, bn::size box_size) {
+    return bn::rect(sprite.x().round_integer(),
+                    sprite.y().round_integer(),
+                    box_size.width(),
+                    box_size.height());
+}
 
 Player::Player(bn::fixed x, bn::fixed y, bn::fixed player_speed, bn::size player_size) : 
     sprite(bn::sprite_items::dot.create_sprite(x, y)),

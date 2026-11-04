@@ -10,7 +10,7 @@ Enemy::Enemy(bn::fixed x, bn::fixed y, bn::fixed mob_speed, bn::size mob_size) :
     bounding_box(create_bounding_box(mob, mob_size))
     {}
 
-void update(Player& player) {
+void Enemy::update(Player& player) {
     //Just remembered to update the hitbox of the enemy for every frame it moves
     //Also hitbox logic should be at the top so that the hitbox doesn't feel
     //delayed and is more reactive.
