@@ -213,6 +213,8 @@ class Enemy {
 int main() {
     bn::core::init();
 
+    bn::vector<Enemy, 3>;
+
     bn::random rand;
 
     // Create a new score display
