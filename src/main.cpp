@@ -107,6 +107,8 @@ class ScoreDisplay {
 int main() {
     bn::core::init();
 
+    bn::music_items::bg_music.play(0.8f); 
+
     bn::random rand;
     //random spawn for new enemys
     bn::random rand_spawn;
@@ -141,6 +143,7 @@ int main() {
                 int random_y = rand_spawn.get_int(-150, 150);
 
                 enemies.push_back(Enemy(random_x, random_y, 0.75, ENEMY_SIZE));
+                
             }   
         }
 
