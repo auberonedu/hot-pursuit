@@ -5,7 +5,7 @@
 #include "bn_sprite_items_enemy.h"
 #include "Enemy.h"
 
-// Enemy speed
+// Start enemy speed
 static constexpr double ENEMY_SPEED = 1;
 
 // Width and height of the the enemy bounding box
@@ -56,10 +56,10 @@ void Enemy::update()
     bounding_box = create_bounding_box(sprite, size);
 }
 
-Enemy::Enemy(bn::fixed x_start, bn::fixed y_start, Player &player_ref) : sprite(bn::sprite_items::enemy.create_sprite(x_start, y_start)),
-                                                                         speed(ENEMY_SPEED),
-                                                                         size(ENEMY_SIZE),
-                                                                         bounding_box(create_bounding_box(sprite, size)),
-                                                                         player(player_ref)
+Enemy::Enemy(bn::fixed x_start, bn::fixed y_start, Player &player_ref, double enemy_speed) : sprite(bn::sprite_items::enemy.create_sprite(x_start, y_start)),
+                                                                                             speed(enemy_speed),
+                                                                                             size(ENEMY_SIZE),
+                                                                                             bounding_box(create_bounding_box(sprite, size)),
+                                                                                             player(player_ref)
 {
 }

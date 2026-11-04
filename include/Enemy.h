@@ -18,5 +18,5 @@ public:
 
     void update();
 
-    Enemy(bn::fixed x_start, bn::fixed y_start, Player &player_ref);
+    Enemy(bn::fixed x_start, bn::fixed y_start, Player &player_ref, double player_speed);
 };

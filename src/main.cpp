@@ -16,6 +16,11 @@ static constexpr int MAX_X = bn::display::width() / 2;
 // The maximum number of enemys
 static constexpr int MAX_ENEMIES = 3;
 
+// Start enemy speed
+static constexpr double ENEMY_SPEED = 1;
+static constexpr double ENEMY_SPEED_BUMP = 0.1;
+static constexpr int FIRST_FAST_ENEMY_INDEX = 2;
+
 // Starting location
 static constexpr int START_X = 44;
 static constexpr int START_Y = 22;
@@ -23,6 +28,17 @@ static constexpr int START_Y = 22;
 static constexpr int E_START_X = 0;
 static constexpr int E_START_Y = 0;
 
+// Helper function to get the required enemy speed per enemy spawned
+double speed_for_index(int index)
+{
+    if (index < FIRST_FAST_ENEMY_INDEX)
+    {
+        return ENEMY_SPEED;
+    }
+
+    int enemies_past_max = index - FIRST_FAST_ENEMY_INDEX + 1;
+    return ENEMY_SPEED + ENEMY_SPEED_BUMP * enemies_past_max;
+}
 
 int main()
 {
@@ -38,14 +54,16 @@ int main()
 
     while (true)
     {
-
+        // Check when to spawn an enemy
         if (enemies.size() == 0)
         {
-            enemies.push_back(Enemy(E_START_X, E_START_Y, player));
+            // Add to the enemies array and apply correct speed
+            enemies.push_back(Enemy(E_START_X, E_START_Y, player, speed_for_index(enemies.size())));
         }
         if (scoreDisplay.score % 100 == 0 && enemies.size() < enemies.max_size())
         {
-            enemies.push_back(Enemy(E_START_X, E_START_Y, player));
+            // Add to the enemies array and apply correct speed
+            enemies.push_back(Enemy(E_START_X, E_START_Y, player, speed_for_index(enemies.size())));
         }
 
         for (Enemy &e : enemies)
