@@ -213,8 +213,6 @@ class Enemy {
 int main() {
     bn::core::init();
 
-    bn::vector<Enemy, 3>;
-
     bn::random rand;
 
     // Create a new score display
@@ -223,20 +221,28 @@ int main() {
     // Create a player and initialize it
     // TODO: we will move the initialization logic to a constructor.
     Player player = Player(44, 22, 1.5, PLAYER_SIZE);
-    Enemy enemy = Enemy(-40, 30, 0.75, ENEMY_SIZE);
-    
 
+    //Enemy vector
+    bn::vector<Enemy, 3> enemies;
+
+    // Manually add a few enemies
+    enemies.push_back(Enemy(-40, 30, 0.75, ENEMY_SIZE));
+    enemies.push_back(Enemy(60, -40, 0.5, ENEMY_SIZE));
+    
     while(true) {
         player.update();
-        enemy.update(player);
 
-        // Reset the current score and player position if the player collides with enemy
-        if(enemy.bounding_box.intersects(player.bounding_box)) {
-            scoreDisplay.resetScore();
-            player.sprite.set_x(44);
-            player.sprite.set_y(22);
-            
-            enemy_position(enemy, rand);
+        for(int i = 0; i < enemies.size(); i++) {
+            enemies[i].update(player);
+
+            // Reset the current score and player position if the player collides with any enemy
+            if(enemies[i].bounding_box.intersects(player.bounding_box)) {
+                scoreDisplay.resetScore();
+                player.sprite.set_x(44);
+                player.sprite.set_y(22);
+
+                enemy_position(enemies[i], rand);
+            }
         }
 
         // Update the scores and disaply them
