@@ -36,11 +36,16 @@ int main() {
     int frames = 0;
     int spawn_time = 600;
 
+    //enemy speed settings
+    bn::fixed Espeed = 0.75;
+    bn::fixed Eincrease = 0.25;
+    bn::fixed Emax = 2;    
+
     //Enemy vector
     bn::vector<Enemy, 5> enemies;
 
     // Manually add a few enemies
-    enemies.push_back(Enemy(-40, 30, 0.75, ENEMY_SIZE));
+    enemies.push_back(Enemy(-40, 30, 0.5, ENEMY_SIZE));
     
     while(true) {
         player.update();
@@ -54,7 +59,12 @@ int main() {
                 int random_x = rand_spawn.get_int(-150, 150);
                 int random_y = rand_spawn.get_int(-150, 150);
 
-                enemies.push_back(Enemy(random_x, random_y, 0.75, ENEMY_SIZE));
+                enemies.push_back(Enemy(random_x, random_y, Espeed, ENEMY_SIZE));
+
+                //Increases new incoming enemy speed
+                if (Espeed < Emax) {
+                    Espeed += Eincrease;
+                }
             }   
         }
 
@@ -71,6 +81,9 @@ int main() {
 
                 //Resets the 10 second timer
                 frames = 0;
+
+                //Resets enemy speed
+                Espeed = 0;
                 
                 //Resets enemy size when colliding with the player
                 while(enemies.size() > 1) {
