@@ -19,5 +19,3 @@ public:
 
     void update();
 };
-
-#endif
