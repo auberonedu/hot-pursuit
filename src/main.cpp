@@ -11,6 +11,9 @@
 #include "enemy.h"
 #include "score.h"
 
+//music
+#include "bn_sound_items.h"
+
 // Width and height of the the player bounding box
 static constexpr bn::size PLAYER_SIZE = {8, 8};
 static constexpr bn::size ENEMY_SIZE = {8, 8};
@@ -73,6 +76,8 @@ int main() {
                 scoreDisplay.resetScore();
                 player.sprite.set_x(44);
                 player.sprite.set_y(22);
+
+                bn::sound_items::oink.play();
 
                 //Resets the 10 second timer
                 frames = 0;
