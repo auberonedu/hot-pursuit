@@ -85,7 +85,7 @@ int main() {
                     enemies.pop_back();
                 }
 
-                enemy_position(enemies[i], rand);
+                enemy_position(enemies[0], rand);
             }
         }
 
