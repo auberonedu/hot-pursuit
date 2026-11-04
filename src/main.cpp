@@ -214,6 +214,8 @@ int main() {
     bn::core::init();
 
     bn::random rand;
+    //random spawn for new enemys
+    bn::random rand_spawn;
 
     // Create a new score display
     ScoreDisplay scoreDisplay = ScoreDisplay();
@@ -222,15 +224,31 @@ int main() {
     // TODO: we will move the initialization logic to a constructor.
     Player player = Player(44, 22, 1.5, PLAYER_SIZE);
 
+    //frame counter
+    int frames = 0;
+    int spawn_time = 600;
+
     //Enemy vector
-    bn::vector<Enemy, 3> enemies;
+    bn::vector<Enemy, 5> enemies;
 
     // Manually add a few enemies
-    enemies.push_back(Enemy(-40, 30, 0.75, ENEMY_SIZE));
-    enemies.push_back(Enemy(60, -40, 0.5, ENEMY_SIZE));
+    enemies.push_back(Enemy(0, 0));
     
     while(true) {
         player.update();
+
+        frames++;
+
+        if (frames >= spawn_time) {
+            frames = 0;
+
+            if (!enemies.full()) {
+                int random_x = rand_spawn.get_int(-150, 150);
+                int random_y = rand_spawn.get_int(-150, 150);
+
+                enemies.push_back(Enemy(random_x, random_y));
+            }   
+        }
 
         for(int i = 0; i < enemies.size(); i++) {
             enemies[i].update(player);
