@@ -83,7 +83,7 @@ int main() {
                 frames = 0;
 
                 //Resets enemy speed
-                Espeed = 0;
+                Espeed = 0.75;
                 
                 //Resets enemy size when colliding with the player
                 while(enemies.size() > 1) {
