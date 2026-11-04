@@ -11,8 +11,8 @@
 #include "enemy.h"
 #include "score.h"
 
-//includes for music
-#include "bn_sound_items_oink.h"
+//music
+#include "bn_sound_items.h"
 
 // Width and height of the the player bounding box
 static constexpr bn::size PLAYER_SIZE = {8, 8};
