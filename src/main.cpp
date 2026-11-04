@@ -258,9 +258,12 @@ int main() {
                 scoreDisplay.resetScore();
                 player.sprite.set_x(44);
                 player.sprite.set_y(22);
+
+                //Resets the 10 second timer
+                frames = 0;
                 
                 //Resets enemy size when colliding with the player
-                if(enemies.size() > 1) {
+                while(enemies.size() > 1) {
                     enemies.pop_back();
                 }
 
