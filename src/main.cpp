@@ -8,8 +8,8 @@
 #include <bn_sprite_text_generator.h>
 
 #include "common_fixed_8x16_font.h"
-#include "bn_sprite_items_dot.h"
-#include "bn_sprite_items_square.h"
+#include "bn_sprite_items_player.h"
+#include "bn_sprite_items_enemy.h"
 #include "Player.h"
 #include "Enemy.h"
 
