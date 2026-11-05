@@ -1,0 +1,65 @@
+#include <bn_sprite_ptr.h>
+#include <bn_size.h>
+#include <bn_rect.h>
+#include <bn_keypad.h>
+#include "bn_sprite_items_enemy.h"
+#include "Enemy.h"
+
+// Start enemy speed
+static constexpr double ENEMY_SPEED = 1;
+
+// Width and height of the the enemy bounding box
+static constexpr bn::size ENEMY_SIZE = {8, 8};
+
+/**
+ * Creates a rectangle centered at a sprite's location with a given size.
+ * sprite the sprite to center the box around
+ * box_size the dimensions of the bounding box
+ */
+static bn::rect create_bounding_box(bn::sprite_ptr sprite, bn::size box_size)
+{
+    return bn::rect(sprite.x().round_integer(),
+                    sprite.y().round_integer(),
+                    box_size.width(),
+                    box_size.height());
+}
+
+void Enemy::update()
+{
+
+    bn::fixed player_x = player.sprite.x();
+    bn::fixed player_y = player.sprite.y();
+
+    bn::fixed enemy_x = sprite.x();
+    bn::fixed enemy_y = sprite.y();
+
+    if (player_x > enemy_x)
+    {
+        sprite.set_x(enemy_x + speed);
+    }
+
+    if (player_x < enemy_x)
+    {
+        sprite.set_x(enemy_x - speed);
+    }
+
+    if (player_y > enemy_y)
+    {
+        sprite.set_y(enemy_y + speed);
+    }
+
+    if (player_y < enemy_y)
+    {
+        sprite.set_y(enemy_y - speed);
+    }
+
+    bounding_box = create_bounding_box(sprite, size);
+}
+
+Enemy::Enemy(bn::fixed x_start, bn::fixed y_start, Player &player_ref, double enemy_speed) : sprite(bn::sprite_items::enemy.create_sprite(x_start, y_start)),
+                                                                                             speed(enemy_speed),
+                                                                                             size(ENEMY_SIZE),
+                                                                                             bounding_box(create_bounding_box(sprite, size)),
+                                                                                             player(player_ref)
+{
+}
