@@ -1,159 +1,125 @@
 #include <bn_core.h>
 #include <bn_display.h>
-#include <bn_keypad.h>
-#include <bn_rect.h>
-#include <bn_size.h>
-#include <bn_string.h>
-#include <bn_sprite_ptr.h>
-#include <bn_sprite_text_generator.h>
-
-#include "common_fixed_8x16_font.h"
-#include "bn_sprite_items_dot.h"
-#include "bn_sprite_items_square.h"
-
-// Width and height of the the player bounding box
-static constexpr bn::size PLAYER_SIZE = {8, 8};
-static constexpr bn::size ENEMY_SIZE = {8, 8};
+#include <bn_log.h>
+#include "create_bounding_box.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "methods.h"
+#include "score_display.h"
+#include "bn_regular_bg_items_cavebackground.h"
+#include "bn_regular_bg_items_winner.h"
+#include "bn_regular_bg_ptr.h"
+#include <bn_music_items.h>
+#include <bn_sound_items.h>
 
 static constexpr int MIN_Y = -bn::display::height() / 2;
 static constexpr int MAX_Y = bn::display::height() / 2;
 static constexpr int MIN_X = -bn::display::width() / 2;
 static constexpr int MAX_X = bn::display::width() / 2;
 
-// Number of characters required to show two of the longest numer possible in an int (-2147483647)
-static constexpr int MAX_SCORE_CHARS = 22;
+// Player start location
+static constexpr int START_X = 44;
+static constexpr int START_Y = 22;
 
-// Score location
-static constexpr int SCORE_X = 70;
-static constexpr int SCORE_Y = -70;
+// Enemy start location
+static constexpr int ENEMY_X = 0;
+static constexpr int ENEMY_Y = 0;
 
-// High score location
-static constexpr int HIGH_SCORE_X = -70;
-static constexpr int HIGH_SCORE_Y = -70;
+// Max amount of enemies
+static constexpr int MAX_ENEMY = 5;
 
-/**
- * Creates a rectangle centered at a sprite's location with a given size.
- * sprite the sprite to center the box around
- * box_size the dimensions of the bounding box
- */
-bn::rect create_bounding_box(bn::sprite_ptr sprite, bn::size box_size) {
-    return bn::rect(sprite.x().round_integer(),
-                    sprite.y().round_integer(),
-                    box_size.width(),
-                    box_size.height());
-}
-
-/**
- * Displays a score and high score.
- * 
- * Score starts a 0 and is increased each time update is called, and reset to 0 when resetScore is
- * called. High score tracks the highest score ever reached.
-*/
-class ScoreDisplay {
-    public:
-        ScoreDisplay() :
-            score(0), // Start score at 0
-            high_score(0), // Start high score at 0
-            score_sprites(bn::vector<bn::sprite_ptr, MAX_SCORE_CHARS>()), // Start with empty vector for score sprites
-            text_generator(bn::sprite_text_generator(common::fixed_8x16_sprite_font)) // Use a new text generator
-        {}
-
-        /**
-         * Increases score by 1 and updates high score if needed. Displays score and high score.
-         */
-        void update() {
-            // increase score and update high score if this is the new highest
-            score++;
-            if(score > high_score) {
-                high_score = score;
-            }
-
-            // Stop displaying previous scores
-            score_sprites.clear();
-
-            // Display new scores
-            show_number(SCORE_X, SCORE_Y, score);
-            show_number(HIGH_SCORE_X, HIGH_SCORE_Y, high_score);
-        }
-
-        /**
-         * Displays a number at the given position
-         */
-        void show_number(int x, int y, int number) {
-            // Convert number to a string and then display it
-            bn::string<MAX_SCORE_CHARS> number_string = bn::to_string<MAX_SCORE_CHARS>(number);
-            text_generator.generate(x, y, number_string, score_sprites);
-        }
-
-        /**
-         * Sets score back to 0. Does NOT reset high score.
-         */
-        void resetScore() {
-            score = 0;
-        }
-
-        int score; // current score
-        int high_score; // best core
-        bn::vector<bn::sprite_ptr, MAX_SCORE_CHARS> score_sprites; // Sprites to display scores
-        bn::sprite_text_generator text_generator; // Text generator for scores
-};
-
-class Player {
-    public:
-        /**
-         * Update the position and bounding box of the player based on d-pad movement.
-         */
-        void update() {
-            if(bn::keypad::right_held()) {
-                sprite.set_x(sprite.x() + speed);
-            }
-            if(bn::keypad::left_held()) {
-                sprite.set_x(sprite.x() - speed);
-            }
-            // TODO: Add logic for up and down
-
-            bounding_box = create_bounding_box(sprite, size);
-        }
-
-        // Create the sprite. This will be moved to a constructor
-        bn::sprite_ptr sprite = bn::sprite_items::dot.create_sprite();
-        bn::fixed speed; // The speed of the player
-        bn::size size; // The width and height of the sprite
-        bn::rect bounding_box; // The rectangle around the sprite for checking collision
-};
-
-int main() {
+int main()
+{
     bn::core::init();
+
+    bn::regular_bg_ptr background = bn::regular_bg_items::cavebackground.create_bg(0,0);
+
+    //Play the bgm
+    bn::music_items::zombi2.play();
 
     // Create a new score display
     ScoreDisplay scoreDisplay = ScoreDisplay();
 
     // Create a player and initialize it
     // TODO: we will move the initialization logic to a constructor.
-    Player player = Player();
-    player.sprite.set_x(44);
-    player.sprite.set_y(22);
-    player.speed = 1.5;
-    player.size = PLAYER_SIZE;
-    player.bounding_box = create_bounding_box(player.sprite, player.size);
+    Player player = Player(START_X, START_Y);
 
-    bn::sprite_ptr enemy_sprite = bn::sprite_items::square.create_sprite(-30, 22);
-    bn::rect enemy_bounding_box = create_bounding_box(enemy_sprite, ENEMY_SIZE);
+    bn::vector<Enemy, MAX_ENEMY> enemies = {};
+    // Spawn the first enemy
+    bn::sound_items::zombiegrowl.play();
+    enemies.push_back(Enemy(random_x_gen(), random_y_gen()));
 
-    while(true) {
+    int enemySpawner = 0;
+
+    while (true)
+    {
         player.update();
 
-        // Reset the current score and player position if the player collides with enemy
-        if(enemy_bounding_box.intersects(player.bounding_box)) {
-            scoreDisplay.resetScore();
-            player.sprite.set_x(44);
-            player.sprite.set_y(22);
+        // For each enemy in the enemies vector, call the update function to add pursuit behavior.
+        for (Enemy &enemy : enemies)
+        {
+            enemy.update(player);
+            // Reset the current score and player position if the player collides with enemy
         }
 
-        // Update the scores and disaply them
-        scoreDisplay.update();
-        
+        // For each enemy in the enemies vector, call the update function to add pursuit behavior.
+        for (Enemy &enemy : enemies)
+        {
+            // Reset the current score and player position if the player collides with enemy
+            if (enemy.bounding_box.intersects(player.bounding_box))
+            {
+                scoreDisplay.resetScore();
+                player.sprite.set_x(START_X);
+                player.sprite.set_y(START_Y);
+                bn::sound_items::stop.play();
 
+                if (enemies.size() == 1)
+                {
+                    bn::sound_items::zombiegrowl.play();
+                    enemy.enemy_sprite.set_x(random_x_gen());
+                    enemy.enemy_sprite.set_y(random_y_gen());
+                    enemySpawner = 0;
+                }
+                else if (enemies.size() > 1)
+                {
+                    enemies.clear();
+                    enemySpawner = 0;
+                    enemies.push_back(Enemy(random_x_gen(), random_y_gen()));
+                    enemy.enemy_sprite.set_x(random_x_gen());
+                    enemy.enemy_sprite.set_y(random_y_gen());
+                }
+            }
+        }
+
+        if (enemySpawner == 300)
+        {
+            if (enemies.size() < MAX_ENEMY)
+            {
+                bn::sound_items::zombiegrowl.play();
+                enemies.push_back(Enemy(random_x_gen(), random_y_gen()));
+            }
+            enemySpawner = 0;
+        }
+
+        BN_LOG(scoreDisplay.get_score());
+        if(scoreDisplay.get_score() >= 2000){
+            enemies.clear();
+            background = bn::regular_bg_items::winner.create_bg(0,0);
+        }
+
+        // Update the scores and display them
+        if(scoreDisplay.get_score() <= 2000){
+            scoreDisplay.update();
+        } else {
+            scoreDisplay.clear();
+        }
+
+        if(bn::keypad::start_pressed()){
+            scoreDisplay.resetScore();
+            background = bn::regular_bg_items::cavebackground.create_bg(0,0);
+        }
+        
+        enemySpawner++;
         bn::core::update();
     }
 }
